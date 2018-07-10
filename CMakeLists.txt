@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.0)
 
 project(micro-service)
-
+find_package(cpprestsdk REQUIRED)
 # Configure required libraries ...
 if(UNIX) # Darwing or Linux
     
@@ -15,7 +15,7 @@ if(UNIX) # Darwing or Linux
 	    list(REVERSE OPENSSL_ROOT_DIR)
 
         find_package(OpenSSL 1.0.2 REQUIRED)
-        set(OPENSSL_VERSION "1.0.2f")
+        set(OPENSSL_VERSION "1.0.2o_2")
     else()
         find_package(OpenSSL 1.0.1 REQUIRED)
         set(OPENSSL_VERSION "1.0.1")
@@ -58,14 +58,15 @@ set(HEADER_SEARCH_PATHS ${CPPRESTSDK_INCLUDE_DIR} ${MICROSERVICE_INCLUDE_DIR} ${
 # library search paths ...
 if(APPLE)
     set(OPENSSL_LIBS "/usr/local/Cellar/openssl/${OPENSSL_VERSION}/lib/libssl.1.0.0.dylib;/usr/local/Cellar/openssl/${OPENSSL_VERSION}/lib/libcrypto.1.0.0.dylib")
-    set(CPPRESTSDK_LIBRARY "${PROJECT_SOURCE_DIR}/libs/cpprestsdk/build.release/Binaries/libcpprest.a")
+    #    set(CPPRESTSDK_LIBRARY "${PROJECT_SOURCE_DIR}/libs/cpprestsdk/build.release/Binaries/libcpprest.a")
 
     set(LIBRARIES_SEARCH_PATHS ${OPENSSL_LIBS} ${Boost_LIBRARIES} ${CPPRESTSDK_LIBRARY})
 else()
     set(OPENSSL_LIBS "${OPENSSL_LIBRARIES}")
     set(CPPRESTSDK_LIBRARY "${PROJECT_SOURCE_DIR}/libs/cpprestsdk/build.release/Binaries/libcpprest.a")
 
-    set(LIBRARIES_SEARCH_PATHS ${CPPRESTSDK_LIBRARY} ${OPENSSL_LIBS} ${Boost_LIBRARIES})
+    #    set(LIBRARIES_SEARCH_PATHS ${CPPRESTSDK_LIBRARY} ${OPENSSL_LIBS} ${Boost_LIBRARIES})
+        set(LIBRARIES_SEARCH_PATHS  ${OPENSSL_LIBS} ${Boost_LIBRARIES})
 endif()
 
 message(BOOST_LIBS " ${Boost_LIBRARIES}")
@@ -77,7 +78,7 @@ include_directories(${HEADER_SEARCH_PATHS})
 if (APPLE)
     target_link_libraries(${PROJECT_NAME} "-framework CoreFoundation")
     target_link_libraries(${PROJECT_NAME} "-framework Security")
-    target_link_libraries(${PROJECT_NAME} ${LIBRARIES_SEARCH_PATHS})
+    target_link_libraries(${PROJECT_NAME} ${LIBRARIES_SEARCH_PATHS} cpprestsdk::cpprest)
     set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-W1, -F/Library/Frameworks")
 else()
     target_link_libraries(${PROJECT_NAME} ${LIBRARIES_SEARCH_PATHS})
